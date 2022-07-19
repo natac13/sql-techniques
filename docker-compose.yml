@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql
+    command: --lower_case_table_names=2
+    volumes:
+      - 'database:/var/lib/mysql:delegated'
+      - './db-start-up/:/docker-entrypoint-initdb.d/:ro'
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    restart: 'always'
+    ports:
+      - '3306:3306'
+    networks:
+      - web
+
+  pma:
+    image: phpmyadmin/phpmyadmin
+    depends_on:
+      - db
+    restart: 'always'
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    volumes:
+      - ./config/phpmyadmin.ini:/usr/local/etc/php/conf.d/phpmyadmin.ini
+    ports:
+      - 8088:80
+    links:
+      - db
+    networks:
+      - web
+
+volumes:
+  database:
+networks:
+  web:
+    driver: bridge
