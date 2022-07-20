@@ -1,0 +1,10 @@
+HAVING 
+- filters groups
+- works with group by only
+- column type function
+- used after groupby
+
+WHERE
+- filters tables
+- can use without groupby
+- row type function
